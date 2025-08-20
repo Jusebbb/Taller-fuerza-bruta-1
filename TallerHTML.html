@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Taller semana 3 – Fuerza Bruta | Análisis de Algoritmos</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;     /* slate-900 */
+      --panel: #111827;  /* gray-900 */
+      --text: #e5e7eb;   /* gray-200 */
+      --muted: #94a3b8;  /* slate-400 */
+      --accent: #22d3ee; /* cyan-400 */
+      --card: #0b1220;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background: radial-gradient(1200px 600px at 10% -20%, rgba(167,139,250,.18), transparent 60%),
+                  radial-gradient(900px 600px at 110% 10%, rgba(34,211,238,.12), transparent 60%),
+                  var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+    }
+
+    .container { max-width: 1000px; margin: 0 auto; padding: 2rem; }
+
+    /* Header (ya NO sticky) */
+    header.hero {
+      padding: 3rem 1.25rem 2rem;
+      border-radius: 1.25rem;
+      background: linear-gradient(180deg, rgba(17,24,39,.7), rgba(17,24,39,.9));
+      box-shadow: 0 30px 80px rgba(0,0,0,.35), inset 0 0 0 1px rgba(255,255,255,.05);
+      text-align:center;
+      margin-bottom: 2rem;
+    }
+    .hero h1 { font-size: clamp(1.8rem, 1.2rem + 3.5vw, 3.2rem); margin: 0 0 .5rem; letter-spacing: -0.02em; }
+    .hero p { margin: 0.15rem 0; color: var(--muted); }
+    .badges { display: flex; gap: .5rem; flex-wrap: wrap; justify-content:center; margin-top: .75rem; }
+    .badge { border: 1px solid rgba(255,255,255,.08); background: rgba(11,18,32,.6); color: var(--text); padding: .35rem .6rem; border-radius: 999px; font-size: .85rem; }
+
+    /* TOC */
+    nav.toc { margin: 1.75rem 0 2rem; padding: 1rem; border-radius: 1rem; background: linear-gradient(180deg, rgba(10,16,31,.8), rgba(10,16,31,.95)); border: 1px solid rgba(255,255,255,.06); }
+    nav.toc h2 { font-size: 1rem; margin: 0 0 .75rem; letter-spacing: .06em; color: var(--muted); text-transform: uppercase; }
+    nav.toc ul { list-style: none; margin: 0; padding: 0; columns: 1; column-gap: 2rem; }
+    @media (min-width: 700px){ nav.toc ul { columns: 2; }}
+    nav.toc a { display: inline-block; padding: .35rem .5rem; margin: .1rem 0; text-decoration: none; color: var(--text); border-radius: .5rem; }
+    nav.toc a:hover { background: rgba(167,139,250,.12); }
+
+    /* Sections */
+    section.card { background: linear-gradient(180deg, rgba(11,18,32,.75), rgba(11,18,32,.9)); border: 1px solid rgba(255,255,255,.06); border-radius: 1rem; padding: 1.25rem; margin: 1.25rem 0; }
+    section.card h3 { margin-top: 0; font-size: clamp(1.15rem, 1rem + 1vw, 1.6rem); letter-spacing: -.01em; }
+    .meta { display: grid; grid-template-columns: 1fr; gap: .75rem; margin: .75rem 0 0; }
+    .meta div { padding: .75rem .9rem; background: var(--card); border: 1px solid rgba(255,255,255,.05); border-radius: .75rem; }
+    .meta strong { color: var(--accent); font-weight: 600; }
+
+    /* Images */
+    .code-img { display:block; margin: 1rem auto; width: min(720px, 100%); border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.06) inset; }
+    .img-caption { text-align:center; color: var(--muted); font-size:.9rem; margin-top:.25rem }
+
+    details { margin-top: .75rem; }
+    details summary { cursor: pointer; list-style: none; }
+    details summary::-webkit-details-marker { display: none }
+    details summary { padding: .5rem .75rem; border: 1px dashed rgba(255,255,255,.15); border-radius: .5rem; color: var(--muted); }
+    details[open] summary { border-style: solid; color: var(--text); }
+
+    code.block {
+      display: block; white-space: pre-wrap; padding: 1rem; border-radius: .75rem;
+      background: #0b1020; border: 1px solid rgba(255,255,255,.06); font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: .9rem; line-height: 1.6; color: #e2e8f0;
+    }
+
+    footer { text-align: center; color: var(--muted); padding: 3rem 1rem 5rem; }
+    .pill { display:inline-block; padding:.35rem .6rem; border-radius:999px; background:rgba(34,211,238,.12); border:1px solid rgba(34,211,238,.35); }
+
+    @media print {
+      body { background: #fff; color: #000; }
+      header.hero, nav.toc { background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; box-shadow: none; border: 1px solid #ddd; }
+      section.card { border: 1px solid #ddd; }
+      a { color: #000; text-decoration: underline; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header class="hero">
+      <h1>Taller semana 3 – Fuerza Bruta</h1>
+      <p><strong>Análisis de algoritmos</strong></p>
+      <div class="badges">
+        <span class="badge">Pontificia Universidad Javeriana</span>
+        <span class="badge">Bogotá D.C</span>
+        <span class="badge">2025</span>
+      </div>
+      <div class="badges" style="margin-top:.5rem">
+        <span class="badge">Juan Sebastian Vargas</span>
+        <span class="badge">Tomas Ortega</span>
+        <span class="badge">Paula Garcia</span>
+      </div>
+    </header>
+
+    <nav class="toc" aria-label="Tabla de contenido">
+      <h2>Contenido</h2>
+      <ul>
+        <li><a href="#linear-search">1) Búsqueda Lineal (Linear Search)</a></li>
+        <li><a href="#naive-string">2) Búsqueda ingenua de patrón en texto</a></li>
+        <li><a href="#subset-sum">3) Subset Sum (Suma de subconjuntos)</a></li>
+        <li><a href="#tsp">4) TSP por fuerza bruta (Traveling Salesman Problem)</a></li>
+        <li><a href="#knap">5) Mochila 0/1 ingenua</a></li>
+      </ul>
+    </nav>
+
+    <section id="linear-search" class="card">
+      <h3>1) Búsqueda Lineal (Linear Search)</h3>
+      <div class="meta">
+        <div><strong>Origen del problema:</strong> Método clásico de búsqueda, sin un único inventor. Usado desde los inicios de la computación como la forma más directa de encontrar un elemento.</div>
+        <div><strong>Abordaje por fuerza bruta:</strong> Revisa cada elemento de la lista uno por uno hasta encontrar el objetivo o agotar la lista.</div>
+        <div><strong>Complejidad:</strong> Tiempo: O(n). Espacio: O(1).</div>
+        <div><strong>Ejemplo:</strong> En el arreglo [5, 2, 9, 1, 7] buscar el 1 retorna el índice 3.</div>
+      </div>
+      <figure>
+        <img class="code-img" src="Img/Linear Search.png" alt="Código de búsqueda lineal" />
+        <figcaption class="img-caption">Figura 1. Implementación en Python de búsqueda lineal.</figcaption>
+      </figure>
+    </section>
+
+    <section id="naive-string" class="card">
+      <h3>2) Búsqueda ingenua de patrón en texto</h3>
+      <div class="meta">
+        <div><strong>Origen del problema:</strong> No atribuida a un inventor específico. Base para algoritmos como KMP (Knuth–Morris–Pratt, 1977) y Boyer–Moore (1977).</div>
+        <div><strong>Abordaje por fuerza bruta:</strong> Prueba el patrón en cada posición del texto y compara carácter por carácter.</div>
+        <div><strong>Complejidad:</strong> Tiempo: O(n·m), siendo n el tamaño del texto y m el del patrón. Espacio: O(1).</div>
+        <div><strong>Ejemplo:</strong> En «abacaabaccabacaba», buscar «abaca» devuelve posiciones [0, 10].</div>
+      </div>
+      <figure>
+        <img class="code-img" src="Img/Naive String Matching.png" alt="Código búsqueda ingenua de patrón" />
+        <figcaption class="img-caption">Figura 2. Búsqueda ingenua de cadenas.</figcaption>
+      </figure>
+    </section>
+
+    <section id="subset-sum" class="card">
+      <h3>3) Subset Sum (Suma de subconjuntos)</h3>
+      <div class="meta">
+        <div><strong>Origen del problema:</strong> Listada como NP-completa por Richard M. Karp en 1972.</div>
+        <div><strong>Abordaje por fuerza bruta:</strong> Enumera todos los subconjuntos y verifica si alguno suma el objetivo.</div>
+        <div><strong>Complejidad:</strong> Tiempo: O(2^n). Espacio: O(n).</div>
+        <div><strong>Ejemplo:</strong> Con [3, 4, 5, 2] y objetivo 7, devuelve True y [3, 4].</div>
+      </div>
+      <figure>
+        <img class="code-img" src="Img/ Subset Sum.png" alt="Código Subset Sum" />
+        <figcaption class="img-caption">Figura 3. Búsqueda de suma de subconjuntos por backtracking.</figcaption>
+      </figure>
+    </section>
+
+    <section id="tsp" class="card">
+      <h3>4) TSP por fuerza bruta (Traveling Salesman Problem)</h3>
+      <div class="meta">
+        <div><strong>Origen del problema:</strong> Inspirado en el juego Icosian de William Rowan Hamilton (1857). Formalizado en el siglo XX; destacado por Dantzig–Fulkerson–Johnson (1954).</div>
+        <div><strong>Abordaje por fuerza bruta:</strong> Prueba todas las permutaciones de ciudades fijando un origen y toma el ciclo de menor costo.</div>
+        <div><strong>Complejidad:</strong> Tiempo: O(n!). Espacio: O(n).</div>
+        <div><strong>Ejemplo:</strong> Con coordenadas de un cuadrado, la ruta más corta tiene longitud ≈ 4.0.</div>
+      </div>
+      <figure>
+        <img class="code-img" src="Img/TSP.png" alt="Código TSP fuerza bruta" />
+        <figcaption class="img-caption">Figura 4. TSP por fuerza bruta sobre un cuadrado unidad.</figcaption>
+      </figure>
+    </section>
+
+    <section id="knap" class="card">
+      <h3>5) Mochila 0/1 ingenua</h3>
+      <div class="meta">
+        <div><strong>Origen del problema:</strong> Estudiada desde mediados del siglo XX; popularizada por Richard Bellman con programación dinámica.</div>
+        <div><strong>Abordaje por fuerza bruta:</strong> Explora todas las combinaciones de incluir o no cada ítem y selecciona la mejor sin exceder la capacidad.</div>
+        <div><strong>Complejidad:</strong> Tiempo: O(2^n). Espacio: O(n).</div>
+        <div><strong>Ejemplo:</strong> Con capacidad 5, elegir los ítems de peso 2 y 3 da valor 9.</div>
+      </div>
+      <figure>
+        <img class="code-img" src="Img/Mochila 0:1 (Knapsack).png" alt="Código Mochila 0/1 fuerza bruta" />
+        <figcaption class="img-caption">Figura 5. Búsqueda exhaustiva para mochila 0/1.</figcaption>
+      </figure>
+    </section>
+
+    <footer>
+      <span class="pill">Hecho con ❤️ :)</span>
+      <div style="margin-top: .5rem">Gracias.</div>
+    </footer>
+  </div>
+</body>
+</html>
